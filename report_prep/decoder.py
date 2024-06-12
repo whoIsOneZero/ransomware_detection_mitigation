@@ -8,6 +8,11 @@ with open('report.json', 'r') as file:
 # Return empty dictionary if it doesn't exist
 behavior = cuckoo_report.get('behavior', {})
 summary = behavior.get('summary', {})
+processes = behavior.get('generic', [])
+# Extract apistats
+apistats = behavior.get('apistats', {})
+
+strings = cuckoo_report.get('strings', {})
 
 # Mapping of original keys to new keys
 key_mapping = {
@@ -29,6 +34,13 @@ def get_extension(file_path):
     _, ext = os.path.splitext(file_path)
     return ext if ext else None
 
+ # Find the PID for "cerber.exe"
+cerber_pid = None
+for process in processes:
+    if process.get('process_name') == "cerber.exe":
+        cerber_pid = process.get('pid')
+        break
+
 # Open the output file for writing
 with open('extracted.txt', 'w') as outfile:
     for original_key, new_key in key_mapping.items():
@@ -48,4 +60,21 @@ with open('extracted.txt', 'w') as outfile:
                     outfile.write(f"{ext_key}{ext}\n")
         
         # Add a newline for readability between different keys
-        outfile.write("\n")
+        #outfile.write("\n")
+        
+    # Write strings to the file
+    #outfile.write("STRINGS:\n")
+    num = 1
+    for string in strings:
+        outfile.write(f"STR:{num};{string}\n")
+        num = num + 1
+
+    # Write cerber.exe API calls to the file
+    if cerber_pid is not None:
+        # Write apistats for cerber.exe PID to the file
+        cerber_apistats = apistats.get(str(cerber_pid), {})
+        #outfile.write(f"API Stats for PID {cerber_pid}:\n")
+        for api_call, count in cerber_apistats.items():
+            outfile.write(f"API:{api_call}\n")
+    else:
+        outfile.write("PID for cerber.exe not found\n")

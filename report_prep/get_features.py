@@ -13,3 +13,18 @@ with open('VariableNames.txt', 'r', encoding='utf-8') as file:
         """ if i < 5:
             print(feature)
             i = i + 1 """
+        
+# Step 3: Initialize a list of zeros
+num_features = 30970
+binary_vector = [0] * num_features
+
+# Step 4: Set corresponding indices to 1 for features found in `extracted.txt`
+for feature in extracted_features:
+    if feature in variable_names:
+        index = variable_names[feature]
+        binary_vector[index - 1] = 1  # Subtract 1 to convert 1-based index to 0-based
+
+# Step 5: Write the result to `preprocessed.txt`
+with open('preprocessed.txt', 'w') as file:
+    for value in binary_vector:
+        file.write(f"{value}\n")

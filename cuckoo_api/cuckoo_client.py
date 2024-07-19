@@ -1,9 +1,24 @@
-import json
-import time
 import requests
+import time
+import json
+import hashlib
 
 CUCKOO_API_URL = "http://localhost:8090"
-API_KEY = "F5DMfnGruS8WgaXIAhbVFgyour_api_key_here"
+API_KEY = "F5DMfnGruS8WgaXIAhbVFg"
+
+def hash_file(file_path):
+    """Calculate the SHA-256 hash of the given file."""
+    sha256_hash = hashlib.sha256()
+    try:
+        with open(file_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        file_hash = sha256_hash.hexdigest()
+        print("SHA-256 hash of the file: {}".format(file_hash))
+        return file_hash
+    except IOError as e:
+        print("Error reading file {}: {}".format(file_path, e))
+        return None
 
 def submit_file(file_path):
     """Submit a file to Cuckoo for analysis."""
@@ -46,6 +61,15 @@ def get_report(task_id):
 def main():
     file_path = raw_input("Enter the path to the file to analyze: ")
     
+    # Calculate the SHA-256 hash of the file
+    file_hash = hash_file(file_path)
+    if not file_hash:
+        return
+
+    # TODO: remove this portion and add the communication with the database
+    # for now exit the program after hashing
+    return
+
     # Submit the file for analysis
     task_id = submit_file(file_path)
     if not task_id:

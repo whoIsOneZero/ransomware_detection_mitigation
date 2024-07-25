@@ -3,7 +3,11 @@ import time
 import json
 import hashlib
 
-CUCKOO_API_URL = "http://localhost:8090"
+"""
+This code is to be used outside the Ubuntu VM
+"""
+
+CUCKOO_API_URL = "http://192.168.153.41:8090"
 API_KEY = "F5DMfnGruS8WgaXIAhbVFg"
 
 def hash_file(file_path):
@@ -59,16 +63,17 @@ def get_report(task_id):
         return None
 
 def main():
-    file_path = raw_input("Enter the path to the file to analyze: ")
+    file_path = input("Enter the path to the file to analyze: ")
     
     # Calculate the SHA-256 hash of the file
     file_hash = hash_file(file_path)
-    if not file_hash:
-        return
 
-    # TODO: remove this portion and add the communication with the database
-    # for now exit the program after hashing
-    return
+    """ if not file_hash: """
+    """     return """
+
+    """ # TODO: remove this portion and add the communication with the database """
+    """ # for now exit the program after hashing """
+    """ return """
 
     # Submit the file for analysis
     task_id = submit_file(file_path)

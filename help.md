@@ -1,3 +1,18 @@
+# HELP
+All you need to setup your own ransomware analysis tool.
+
+## How to Install and run Cuckoo Sandbox
+- Cuckoo Docs:
+```https://cuckoo.readthedocs.io/en/latest/```
+- Complete guide for setting up and running Cuckoo sandbox locally:
+```https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/```
+
+## Troubleshooting
+- Setup VirtualBox to be able to communicate with the Cuckoo API from teh host machine:
+```https://stackoverflow.com/questions/31922055/bridged-networking-not-working-in-virtualbox-under-windows-10```
+
+
+## For ME
 workon sandbox
 vmcloak-vboxnet0
 sudo sysctl -w net.ipv4.conf.enp0s3.forwarding=1
@@ -16,12 +31,3 @@ window 3 - cuckoo web --host 127.0.0.1 --port 8080
 
 C:\Users\ken20\Downloads\7z2406-x64.exe
 /home/osboxes/Downloads/winrar-x64-701.exe
-
-
-Facing issues?
-- Complete guide for running Cuckoo sandbox locally:
-https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/
-
-- Connect to Cuckoo API within VM from host machine:
-https://stackoverflow.com/questions/31922055/bridged-networking-not-working-in-virtualbox-under-windows-10
-

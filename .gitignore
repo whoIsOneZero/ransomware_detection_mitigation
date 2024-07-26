@@ -1,2 +1,4 @@
 test/svm_model.joblib
 cuckoo_api/*.json
+myenv
+tmp

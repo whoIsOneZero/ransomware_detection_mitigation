@@ -29,6 +29,8 @@ in all windows -  workon sandbox
 window 1 - cuckoo rooter --sudo --group osboxes
 window 2 - cuckoo
 window 3 - cuckoo web --host 127.0.0.1 --port 8080
+or
+cuckoo api --host 192.168.153.41 --port 8090
 
 
 C:\Users\ken20\Downloads\7z2406-x64.exe

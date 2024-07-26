@@ -8,6 +8,8 @@ All you need to setup your own ransomware analysis tool.
 ```https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/```
 
 ## Troubleshooting
+- Cannot start nested win7 VM in Ubuntu VM
+```https://forums.virtualbox.org/viewtopic.php?t=87752``` 
 - Setup VirtualBox to be able to communicate with the Cuckoo API from teh host machine:
 ```https://stackoverflow.com/questions/31922055/bridged-networking-not-working-in-virtualbox-under-windows-10```
 
@@ -31,3 +33,6 @@ window 3 - cuckoo web --host 127.0.0.1 --port 8080
 
 C:\Users\ken20\Downloads\7z2406-x64.exe
 /home/osboxes/Downloads/winrar-x64-701.exe
+
+- Shared folder:
+```https://www.makeuseof.com/how-to-create-virtualbox-shared-folder-access/```

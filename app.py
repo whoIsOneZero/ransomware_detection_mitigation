@@ -20,6 +20,7 @@ def hash_file(file_path):
                 sha256_hash.update(byte_block)
         file_hash = sha256_hash.hexdigest()
         print("SHA-256 hash of the file: {}".format(file_hash))
+        st.write(f"SHA-256 hash of the file: {file_hash}")
         return file_hash
     except IOError as e:
         print("Error reading file {}: {}".format(file_path, e))
@@ -88,40 +89,31 @@ def main():
         # Calculate the SHA-256 hash of the file
         file_hash = hash_file(file_path)
 
-    # End program execution here
-    return
+    
+        # Submit the file for analysis
+        task_id = submit_file(file_path)
+        if not task_id:
+            return
 
-    """ if not file_hash: """
-    """     return """
+        # Check the status of the analysis
+        while True:
+            status = get_task_status(task_id)
+            if status == "reported":
+                print("Analysis completed for task ID: {}".format(task_id))
+                break
+            elif status == "completed":
+                print("Analysis completed for task ID: {}, waiting for report generation.".format(task_id))
+            else:
+                print("Current status of task ID {}: {}".format(task_id, status))
+            time.sleep(10)
 
-    """ # TODO: remove this portion and add the communication with the database """
-    """ # for now exit the program after hashing """
-    """ return """
-
-    # Submit the file for analysis
-    task_id = submit_file(file_path)
-    if not task_id:
-        return
-
-    # Check the status of the analysis
-    while True:
-        status = get_task_status(task_id)
-        if status == "reported":
-            print("Analysis completed for task ID: {}".format(task_id))
-            break
-        elif status == "completed":
-            print("Analysis completed for task ID: {}, waiting for report generation.".format(task_id))
-        else:
-            print("Current status of task ID {}: {}".format(task_id, status))
-        time.sleep(10)
-
-    # Fetch the report
-    report = get_report(task_id)
-    if report:
-        report_path = "report_{}.json".format(task_id)
-        with open(report_path, "w") as report_file:
-            json.dump(report, report_file, indent=4)
-        print("Report saved to {}".format(report_path))
+        # Fetch the report
+        report = get_report(task_id)
+        if report:
+            report_path = "report_{}.json".format(task_id)
+            with open(report_path, "w") as report_file:
+                json.dump(report, report_file, indent=4)
+            print("Report saved to {}".format(report_path))
 
 if __name__ == "__main__":
     main()

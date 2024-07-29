@@ -2,3 +2,4 @@ test/svm_model.joblib
 cuckoo_api/*.json
 myenv
 tmp
+report_9.json

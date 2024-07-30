@@ -1,7 +1,7 @@
 import requests
-import time
-import json
 import hashlib
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 """
 This code is to be used outside the Ubuntu VM
@@ -10,95 +10,80 @@ This code is to be used outside the Ubuntu VM
 CUCKOO_API_URL = "http://192.168.153.41:8090"
 API_KEY = "F5DMfnGruS8WgaXIAhbVFg"
 
-def hash_file(file_path):
-    """Calculate the SHA-256 hash of the given file."""
-    sha256_hash = hashlib.sha256()
-    try:
-        with open(file_path, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-        file_hash = sha256_hash.hexdigest()
-        print("SHA-256 hash of the file: {}".format(file_hash))
-        return file_hash
-    except IOError as e:
-        print("Error reading file {}: {}".format(file_path, e))
-        return None
+class CuckooAPI:
+    def __init__(self):
+        self.api_url = CUCKOO_API_URL
+        self.api_key = API_KEY
+        self.headers = {"Authorization": f"Bearer {API_KEY}"}
 
-def submit_file(file_path):
-    """Submit a file to Cuckoo for analysis."""
-    headers = {"Authorization": "Bearer {}".format(API_KEY)}
-    try:
-        with open(file_path, "rb") as file:
-            files = {"file": file}
-            response = requests.post("{}/tasks/create/file".format(CUCKOO_API_URL), files=files, headers=headers)
+    def hash_file(self, file_path):
+        """Calculate the SHA-256 hash of the given file."""
+        sha256_hash = hashlib.sha256()
+        try:
+            with open(file_path, "rb") as f:
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+            file_hash = sha256_hash.hexdigest()
+            print("SHA-256 hash of the file: {}".format(file_hash))
+            return file_hash
+        except IOError as e:
+            print("Error reading file {}: {}".format(file_path, e))
+            return None
+
+    def submit_file(self, file_path):
+        """Submit a file to Cuckoo for analysis."""
+        # headers = {"Authorization": "Bearer {}".format(API_KEY)}
+        try:
+            with open(file_path, "rb") as file:
+                files = {"file": file}
+                response = requests.post("{}/tasks/create/file".format(self.api_url), files=files, headers=self.headers)
+                response.raise_for_status()
+                task_id = response.json().get("task_id")
+                print("File submitted successfully. Task ID: {}".format(task_id))
+                return task_id
+        except requests.exceptions.RequestException as e:
+            print("Error submitting file: {}".format(e))
+            return None
+
+    def get_task_status(self, task_id):
+        """Check the status of a task."""
+        headers = {"Authorization": "Bearer {}".format(API_KEY)}
+        try:
+            response = requests.get("{}/tasks/view/{}".format(self.api_url, task_id), headers=self.headers)
             response.raise_for_status()
-            task_id = response.json().get("task_id")
-            print("File submitted successfully. Task ID: {}".format(task_id))
-            return task_id
-    except requests.exceptions.RequestException as e:
-        print("Error submitting file: {}".format(e))
-        return None
+            task_status = response.json().get("task", {}).get("status")
+            return task_status
+        except requests.exceptions.RequestException as e:
+            print("Error fetching task status: {}".format(e))
+            return None
 
-def get_task_status(task_id):
-    """Check the status of a task."""
-    headers = {"Authorization": "Bearer {}".format(API_KEY)}
-    try:
-        response = requests.get("{}/tasks/view/{}".format(CUCKOO_API_URL, task_id), headers=headers)
-        response.raise_for_status()
-        task_status = response.json().get("task", {}).get("status")
-        return task_status
-    except requests.exceptions.RequestException as e:
-        print("Error fetching task status: {}".format(e))
-        return None
+    def get_report(self, task_id):
+        """Retrieve the analysis report."""
+        headers = {"Authorization": "Bearer {}".format(API_KEY)}
+        try:
+            response = requests.get("{}/tasks/report/{}".format(self.api_url, task_id), headers=self.headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print("Error fetching report: {}".format(e))
+            return None
+        
+    def save_to_firestore(self, file_hash, file_name, submission_date, analysis_result, report_path):
+        """Save the analysis data to Firebase Firestore if it doesn't already exist."""
+        
+        # Check if the document with the same file_hash exists
+        docs = self.db.collection('signatures').where('file_hash', '==', file_hash).stream()
+        if any(docs):
+            print(f"Data with hash {file_hash} already exists in Firestore.")
+            return
 
-def get_report(task_id):
-    """Retrieve the analysis report."""
-    headers = {"Authorization": "Bearer {}".format(API_KEY)}
-    try:
-        response = requests.get("{}/tasks/report/{}".format(CUCKOO_API_URL, task_id), headers=headers)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print("Error fetching report: {}".format(e))
-        return None
-
-def main():
-    file_path = input("Enter the path to the file to analyze: ")
-    
-    # Calculate the SHA-256 hash of the file
-    file_hash = hash_file(file_path)
-
-    """ if not file_hash: """
-    """     return """
-
-    """ # TODO: remove this portion and add the communication with the database """
-    """ # for now exit the program after hashing """
-    """ return """
-
-    # Submit the file for analysis
-    task_id = submit_file(file_path)
-    if not task_id:
-        return
-
-    # Check the status of the analysis
-    while True:
-        status = get_task_status(task_id)
-        if status == "reported":
-            print("Analysis completed for task ID: {}".format(task_id))
-            break
-        elif status == "completed":
-            print("Analysis completed for task ID: {}, waiting for report generation.".format(task_id))
-        else:
-            print("Current status of task ID {}: {}".format(task_id, status))
-        time.sleep(10)
-
-    # Fetch the report
-    report = get_report(task_id)
-    if report:
-        report_path = "report_{}.json".format(task_id)
-        with open(report_path, "w") as report_file:
-            json.dump(report, report_file, indent=4)
-        print("Report saved to {}".format(report_path))
-
-if __name__ == "__main__":
-    main()
+        # If the document doesn't exist, add it
+        data = {
+            "file_hash": file_hash,
+            "file_name": file_name,
+            "submission_date": submission_date,
+            "analysis_result": analysis_result,
+            "report_path": report_path
+        }
+        self.db.collection('signatures').add(data)
+        print(f"Data saved to Firestore for file: {file_name}")

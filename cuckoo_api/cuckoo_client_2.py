@@ -73,7 +73,7 @@ class CuckooAPI:
             print("Error fetching report: {}".format(e))
             return None
         
-    def save_to_firestore(self, file_hash, file_name, submission_date, analysis_result, report_path):
+    def save_to_firestore(self, file_hash, file_name, submission_date, is_ransomware, report_path):
         """Save the analysis data to Firebase Firestore if it doesn't already exist."""
 
         # Check if the document with the same file_hash exists
@@ -87,7 +87,7 @@ class CuckooAPI:
             "file_hash": file_hash,
             "file_name": file_name,
             "submission_date": submission_date,
-            "analysis_result": analysis_result,
+            "is_ransomware": is_ransomware,
             "report_path": report_path
         }
         self.db.collection('signatures').add(data)

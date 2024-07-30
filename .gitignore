@@ -3,3 +3,4 @@ cuckoo_api/*.json
 myenv
 tmp
 report_9.json
+service_account_key.json

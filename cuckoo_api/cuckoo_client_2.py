@@ -16,6 +16,11 @@ class CuckooAPI:
         self.api_key = API_KEY
         self.headers = {"Authorization": f"Bearer {API_KEY}"}
 
+        # Initialize Firebase
+        cred = credentials.Certificate("../service_account_key.json")
+        firebase_admin.initialize_app(cred)
+        self.db = firestore.client()
+
     def hash_file(self, file_path):
         """Calculate the SHA-256 hash of the given file."""
         sha256_hash = hashlib.sha256()
@@ -70,7 +75,7 @@ class CuckooAPI:
         
     def save_to_firestore(self, file_hash, file_name, submission_date, analysis_result, report_path):
         """Save the analysis data to Firebase Firestore if it doesn't already exist."""
-        
+
         # Check if the document with the same file_hash exists
         docs = self.db.collection('signatures').where('file_hash', '==', file_hash).stream()
         if any(docs):

@@ -49,7 +49,7 @@ class CuckooAPI:
         """Fetch data from Firestore based on the file hash."""
         docs = (
             self.db.collection("signatures")
-            .where("file_hash", "==", file_hash)
+            .where(field_path="file_hash", op_string="==", value=file_hash)
             .stream()
         )
         for doc in docs:
@@ -77,7 +77,7 @@ class CuckooAPI:
 
     def get_task_status(self, task_id):
         """Check the status of a task."""
-        headers = {"Authorization": "Bearer {}".format(API_KEY)}
+        # headers = {"Authorization": "Bearer {}".format(API_KEY)}
         try:
             response = requests.get(
                 "{}/tasks/view/{}".format(self.api_url, task_id), headers=self.headers
@@ -120,11 +120,7 @@ class CuckooAPI:
             "file_hash": file_hash,
             "file_name": file_name,
             "submission_date": submission_date,
-            "is_ransomware": (
-                bool(is_ransomware)
-                if isinstance(is_ransomware, (np.bool_, bool))
-                else int(is_ransomware)
-            ),
+            "is_ransomware": is_ransomware,
         }
         self.db.collection("signatures").add(data)
         # print(f"Data saved to Firestore for file: {file_name}")

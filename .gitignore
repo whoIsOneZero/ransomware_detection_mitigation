@@ -4,3 +4,9 @@ myenv
 tmp
 report_9.json
 service_account_key.json
+__pycache__/
+classify/__pycache__/
+feature_extraction/__pycache__/
+extracted/*
+encodings/*
+reports/*

@@ -1,0 +1,39 @@
+"file_opened" - "FILES:OPENED:"
+		 FILES_EXT:OPENED:  # for each file opened, get the extension
+"regkey_opened" - "REG:OPENED:"
+"regkey_written" - "REG:WRITTEN:"
+"regkey_deleted" - "REG:DELETED:"
+"file_read" - "FILES:READ:"
+	       FILES_EXT:READ:  # for each file read, get the extension
+"regkey_read" - "REG:READ:"
+"file_created" - "DROP:"  # for each file, get the extension
+"file_written"- "FILES:WRITTEN:"
+		FILES_EXT:WRITTEN:  # for each file written, get the extension
+"directory_created" - "DIR:CREATED:"
+"file_deleted" - "FILES:DELETED:"
+		  FILES_EXT:DELETED:  # for each file deleted, get the extension
+"directory_enumerated" - "DIR:ENUMERATED:"
+
+
+
+STR:
+API:
+FILES:OPENED:
+FILES_EXT:OPENED:
+REG:OPENED:
+REG:DELETED:
+FILES:READ:
+FILES_EXT:READ:
+REG:WRITTEN:
+REG:READ:
+DROP:
+FILES:WRITTEN:
+FILES_EXT:WRITTEN:
+DIR:CREATED:
+FILES:DELETED:
+FILES_EXT:DELETED:
+DIR:ENUMERATED:
+
+"dll_loaded"
+"file_moved"
+"file_recreated"

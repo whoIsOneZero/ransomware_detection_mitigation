@@ -15,13 +15,10 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 - Integration with a cloud-based signature repository.
 - User-friendly Streamlit interface for easy usage.
 
-
-Here's a step-by-step procedure to get your chatbot-powered data analysis tool running on a local machine:
-
 ### Prerequisites
-1. **Python Installed**: Ensure you have Python 3.8+ installed on your machine.
+1. **Python Installed**: Ensure you have Python 3.10+ installed on your machine.
 
-### Procedure
+### Usage
 
 1. **Clone the Repository or Download the Code**:
    - If your project is hosted on a version control platform like GitHub, clone the repository.
@@ -31,9 +28,9 @@ Here's a step-by-step procedure to get your chatbot-powered data analysis tool r
    - Alternatively, download the project files and extract them to your desired location.
 
 2. **Navigate to the Project Directory**:
-   - Open a terminal (or command prompt) and navigate to the directory containing your project files.
+   - Open a terminal (or command prompt) and navigate to the directory containing your project files. Example:
      ```sh
-     cd path/to/your/project
+     cd C:\Users\user\Desktop\ransomware_detection_mitigation
      ```
 
 3. **Create a Virtual Environment (Optional but Recommended)**:
@@ -58,16 +55,16 @@ Here's a step-by-step procedure to get your chatbot-powered data analysis tool r
     ```
 
 
-6. **Run the Streamlit App**:
+5. **Run the Streamlit App**:
    - Start the Streamlit app using the `streamlit run` command followed by the name of your main Python script (e.g., `main.py`).
      ```sh
      streamlit run main.py
      ```
 
-7. **Access the App in a Web Browser**:
+6. **Access the App in a Web Browser**:
    - Once the app is running, Streamlit will provide a local URL (typically `http://localhost:8501`). Open this URL in a web browser to access your chatbot-powered data analysis tool.
 
-### Example Command Summary
+### Command Summary
 
 ```sh
 # Step 1: Clone the repository
@@ -84,6 +81,6 @@ source myenv/bin/activate  # On macOS/Linux
 # Step 4: Install required dependencies
 pip install -r requirements.txt
 
-# Step 6: Run the Streamlit app
+# Step 5: Run the Streamlit app
 streamlit run main.py
 ```

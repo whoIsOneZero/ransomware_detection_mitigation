@@ -22,7 +22,7 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 ## Usage
 
 1. **Clone the Repository or Download the Code**:
-   - If your project is hosted on a version control platform like GitHub, clone the repository.
+   - Clone the repository.
      ```sh
      git clone https://github.com/whoIsOneZero/ransomware_detection_mitigation.git
      ```

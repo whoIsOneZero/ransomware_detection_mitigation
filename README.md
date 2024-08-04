@@ -15,10 +15,11 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 - Integration with a cloud-based signature repository.
 - User-friendly Streamlit interface for easy usage.
 
-### Prerequisites
+## Prerequisites
 1. **Python Installed**: Ensure you have Python 3.10+ installed on your machine.
+2. **Oracle VM VirtualBox**: Enusre you're have Oracle VM VirtualBox on a Windows sytem. Download [here](https://www.virtualbox.org/wiki/Downloads)
 
-### Usage
+## Usage
 
 1. **Clone the Repository or Download the Code**:
    - If your project is hosted on a version control platform like GitHub, clone the repository.
@@ -64,7 +65,7 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 6. **Access the App in a Web Browser**:
    - Once the app is running, Streamlit will provide a local URL (typically `http://localhost:8501`). Open this URL in a web browser to access your chatbot-powered data analysis tool.
 
-### Command Summary
+<!-- ## Command Summary
 
 ```sh
 # Step 1: Clone the repository
@@ -83,4 +84,4 @@ pip install -r requirements.txt
 
 # Step 5: Run the Streamlit app
 streamlit run main.py
-```
+``` -->

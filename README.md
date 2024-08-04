@@ -18,6 +18,8 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 ## Prerequisites
 1. **Python Installed**: Ensure you have Python 3.10+ installed on your machine.
 2. **Oracle VM VirtualBox**: Enusre you're have Oracle VM VirtualBox on a Windows sytem. Download [here](https://www.virtualbox.org/wiki/Downloads)
+3. **Cuckoo Sandbox**: Follow the tutorial here to setup your Cuckoo Sandbox
+  ```https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/```
 
 ## Usage
 
@@ -55,8 +57,34 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
     pip install -r requirements.txt
     ```
 
+5. **Start the Cuckoo Sandbox System**:
+  - Activate the virtual environment  
+  ```workon sandbox```
+  - This script creates a VirtualBox host-only network interface called vboxnet0, which is used for communication between the host and the virtual machines.  
+  ```vmcloak-vboxnet0```
+  - Enable IP forwarding on your network interface  
+  ```sudo sysctl -w net.ipv4.conf.enp0s3.forwarding=1```
+  - Configures Network Address Translation (NAT) to allow virtual machines in the 192.168.56.0/24 network to access the internet through the enp0s3 interface.  
+  ```sudo iptables -t nat -A POSTROUTING -o enp0s3 -s 192.168.56.0/24 -j MASQUERADE```
+  - Set the default policy for the FORWARD chain to DROP, which means all forwarded packets will be dropped unless explicitly allowed.  
+  ```sudo iptables -P FORWARD DROP```
+  - Allow packets that are part of an established connection or related to an existing connection.  
+  ```sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT```
+  sudo iptables -A FORWARD -s 192.168.56.0/24 -j ACCEPT
 
-5. **Run the Streamlit App**:
+  Open Terminator and split into 3 windows
+  - Activate the virtual environment in all 3 windows:  
+  ```workon sandbox```
+  - In the Terminator window 1, start the Cuckoo rooter service:  
+  ```cuckoo rooter --sudo --group osboxes```
+  - In the Terminator window 2, start the main Cuckoo service:  
+  ```cuckoo```
+  <!-- - In the Terminator window 3, start the Cuckoo web interface:
+  window 3 - cuckoo web --host 127.0.0.1 --port 8080 -->
+  - In the Terminator window 3, start the Cuckoo REST API server on VM's IP address:
+  ```cuckoo api --host 192.168.153.41 --port 8090```
+
+6. **Run the Streamlit App**:
    - Start the Streamlit app using the `streamlit run` command followed by the name of your main Python script (e.g., `main.py`).
      ```sh
      streamlit run main.py
@@ -65,23 +93,17 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 6. **Access the App in a Web Browser**:
    - Once the app is running, Streamlit will provide a local URL (typically `http://localhost:8501`). Open this URL in a web browser to access your chatbot-powered data analysis tool.
 
-<!-- ## Command Summary
 
-```sh
-# Step 1: Clone the repository
-git clone https://github.com/whoIsOneZero/ransomware_detection_mitigation.git
+## More
+- Cuckoo Docs:
+```https://cuckoo.readthedocs.io/en/latest/```
+- Complete guide for setting up and running Cuckoo sandbox locally:
+```https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/```
 
-# Step 2: Navigate to the project directory
-cd path/to/your/project
-
-# Step 3: Create a virtual environment (optional)
-python -m venv myenv
-source myenv/bin/activate  # On macOS/Linux
-# myenv\Scripts\activate  # On Windows
-
-# Step 4: Install required dependencies
-pip install -r requirements.txt
-
-# Step 5: Run the Streamlit app
-streamlit run main.py
-``` -->
+## Troubleshooting
+- Cannot start nested win7 VM in Ubuntu VM
+```https://forums.virtualbox.org/viewtopic.php?t=87752``` 
+- Setup VirtualBox to be able to communicate with the Cuckoo API from teh host machine:
+```https://stackoverflow.com/questions/31922055/bridged-networking-not-working-in-virtualbox-under-windows-10```
+- Shared folder:
+```https://www.makeuseof.com/how-to-create-virtualbox-shared-folder-access/```

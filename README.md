@@ -71,7 +71,7 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
   ```sudo iptables -P FORWARD DROP```
   - Allow packets that are part of an established connection or related to an existing connection.  
   ```sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT```
-  sudo iptables -A FORWARD -s 192.168.56.0/24 -j ACCEPT
+  ```sudo iptables -A FORWARD -s 192.168.56.0/24 -j ACCEPT```
 
   Open Terminator and split into 3 windows
   - Activate the virtual environment in all 3 windows:  
@@ -82,6 +82,8 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
   ```cuckoo```
   <!-- - In the Terminator window 3, start the Cuckoo web interface:
   window 3 - cuckoo web --host 127.0.0.1 --port 8080 -->
+  - Run this command to get your VM's IP adress of the the primary network interface connected to your VirtualBox's virtual network.
+  ```ip -4 addr show enp0s3 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'```
   - In the Terminator window 3, start the Cuckoo REST API server on VM's IP address:
   ```cuckoo api --host 192.168.153.41 --port 8090```
 

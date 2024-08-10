@@ -8,8 +8,8 @@ import classify.classifier as classifier
 from datetime import datetime
 import numpy as np
 
-CUCKOO_API_URL = "http://192.168.153.41:8090"
-API_KEY = "F5DMfnGruS8WgaXIAhbVFg"
+# CUCKOO_API_URL = "http://192.168.153.41:8090"
+# API_KEY = "F5DMfnGruS8WgaXIAhbVFg"
 
 st.set_page_config(
     page_title="RansomShield",

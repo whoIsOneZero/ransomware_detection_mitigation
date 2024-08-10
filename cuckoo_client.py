@@ -8,7 +8,8 @@ import numpy as np
 This code is to be used outside the Ubuntu VM
 """
 
-CUCKOO_API_URL = "http://192.168.153.41:8090"
+# CUCKOO_API_URL = "http://192.168.153.41:8090"
+CUCKOO_API_URL = "http://192.168.198.41:8090"
 API_KEY = "F5DMfnGruS8WgaXIAhbVFg"
 
 

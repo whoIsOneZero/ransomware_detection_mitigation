@@ -3,6 +3,7 @@ import tkinter.messagebox
 import customtkinter
 from customtkinter import filedialog
 from monitor import DirectoryMonitor
+from sample_handler import single_sample
 
 customtkinter.set_appearance_mode(
     "System"
@@ -88,6 +89,14 @@ class App(customtkinter.CTk):
         )
         self.upload_button.grid(row=1, column=0, padx=20, pady=20)
 
+        self.submit_button = customtkinter.CTkButton(
+            self.tabview.tab("Upload Sample"),
+            text="Submit",
+            command=self.submit_sample_event,
+            state="disabled",  # Initially disabled
+        )
+        self.submit_button.grid(row=1, column=2, padx=20, pady=20)
+
         # Configure the "Monitor Directory" tab
         self.monitor_label = customtkinter.CTkLabel(
             self.tabview.tab("Monitor Directory"),
@@ -107,9 +116,9 @@ class App(customtkinter.CTk):
         self.scaling_optionemenu.set("100%")
 
     def upload_sample_event(self):
-        # Add your logic for uploading and analyzing a sample here
+
         print("Upload sample button clicked")
-        filepath = filedialog.askopenfilename(
+        self.filepath = filedialog.askopenfilename(
             filetypes=[
                 ("Executable files", "*.exe"),
                 ("DLL files", "*.dll"),
@@ -118,14 +127,25 @@ class App(customtkinter.CTk):
                 ("Binary files", "*.bin"),
             ],
         )
-        print(filepath)
+
+        if self.filepath:
+            # print(f"File selected: {self.filepath}")
+
+            # Enable the submit button
+            self.submit_button.configure(state="normal")
+        # print(filepath)
+
+    def submit_sample_event(self):
+        if self.filepath:
+            # Process the sample
+            single_sample.handle_sample(self.filepath)
+            tkinter.messagebox.showinfo("Success", "Sample submitted for analysis!")
+        else:
+            tkinter.messagebox.showwarning("Error", "No file selected.")
 
     def monitor_directory_event(self):
-        # Add your logic for monitoring a directory here
-        # print("Monitor directory button clicked")
 
         folder_selected = filedialog.askdirectory()
-        # print(folder_selected)
 
         # Start monitoring
         if folder_selected:

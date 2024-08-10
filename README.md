@@ -57,7 +57,8 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
     pip install -r requirements.txt
     ```
 
-5. **Start the Cuckoo Sandbox System**:
+5. **Start the Cuckoo Sandbox System**:  
+  In the Ubuntu VM;
   - Activate the virtual environment  
   ```workon sandbox```
   - This script creates a VirtualBox host-only network interface called vboxnet0, which is used for communication between the host and the virtual machines.  
@@ -84,13 +85,15 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
   - In the Terminator window 3, start the Cuckoo REST API server on VM's IP address:
   ```cuckoo api --host 192.168.153.41 --port 8090```
 
-6. **Run the Streamlit App**:
+6. **Run the Streamlit App**:  
+  On your host machine;
    - Start the Streamlit app using the `streamlit run` command followed by the name of your main Python script (e.g., `main.py`).
      ```sh
      streamlit run main.py
      ```
 
-6. **Access the App in a Web Browser**:
+6. **Access the App in a Web Browser**:  
+  On your host machine;
    - Once the app is running, Streamlit will provide a local URL (typically `http://localhost:8501`). Open this URL in a web browser to access your chatbot-powered data analysis tool.
 
 

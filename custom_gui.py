@@ -2,6 +2,7 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 from customtkinter import filedialog
+from monitor import DirectoryMonitor
 
 customtkinter.set_appearance_mode(
     "System"
@@ -108,12 +109,28 @@ class App(customtkinter.CTk):
     def upload_sample_event(self):
         # Add your logic for uploading and analyzing a sample here
         print("Upload sample button clicked")
-        filepath = filedialog.askopenfilename()
+        filepath = filedialog.askopenfilename(
+            filetypes=[
+                ("Executable files", "*.exe"),
+                ("DLL files", "*.dll"),
+                ("PDF files", "*.pdf"),
+                ("Word documents", "*.doc;*.docx"),
+                ("Binary files", "*.bin"),
+            ],
+        )
         print(filepath)
 
     def monitor_directory_event(self):
         # Add your logic for monitoring a directory here
-        print("Monitor directory button clicked")
+        # print("Monitor directory button clicked")
+
+        folder_selected = filedialog.askdirectory()
+        # print(folder_selected)
+
+        # Start monitoring
+        if folder_selected:
+            dir_monitor = DirectoryMonitor(directory=folder_selected)
+            dir_monitor.start_monitoring()
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)

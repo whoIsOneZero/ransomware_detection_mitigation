@@ -4,6 +4,8 @@ import customtkinter
 from customtkinter import filedialog
 from monitor import DirectoryMonitor
 from sample_handler import single_sample
+import concurrent.futures
+import threading
 
 customtkinter.set_appearance_mode(
     "System"
@@ -137,11 +139,59 @@ class App(customtkinter.CTk):
 
     def submit_sample_event(self):
         if self.filepath:
-            # Process the sample
-            single_sample.handle_sample(self.filepath)
-            tkinter.messagebox.showinfo("Success", "Sample submitted for analysis!")
+            # Create a new top-level window to overlay the main window
+            self.loading_window = customtkinter.CTkToplevel(self)
+            self.loading_window.geometry("300x100")  # Adjust size as needed
+            self.loading_window.title("Processing...")
+
+            # Position it in the center of the main window
+            self.loading_window.transient(self)
+            self.loading_window.grab_set()
+
+            # Disable main window interaction
+            self.loading_window.update_idletasks()
+            x = (self.winfo_screenwidth() // 2) - (300 // 2)
+            y = (self.winfo_screenheight() // 2) - (100 // 2)
+            self.loading_window.geometry(f"+{x}+{y}")
+
+            # Create a loading indicator inside the top-level window
+            self.loading_bar = customtkinter.CTkProgressBar(
+                self.loading_window, mode="indeterminate"
+            )
+            self.loading_bar.pack(pady=20, padx=20)
+            self.loading_bar.start()
+
+            # Refresh the UI to show the loading bar
+            self.update()
+
+            # Run the sample processing in a separate thread
+            self.executor = concurrent.futures.ThreadPoolExecutor()
+            future = self.executor.submit(self.process_sample_in_background)
+
+            # Schedule a function to check the result
+            self.after(100, self.check_processing_result, future)
+
         else:
             tkinter.messagebox.showwarning("Error", "No file selected.")
+
+    def process_sample_in_background(self):
+        """This method runs in a separate thread"""
+        single_sample.handle_sample(self.filepath)
+
+    def check_processing_result(self, future):
+        if future.done():
+            self.loading_bar.stop()
+            self.loading_window.destroy()  # Close the loading window
+
+            try:
+                # Check if there was an exception during processing
+                future.result()
+                tkinter.messagebox.showinfo("Success", "Sample submitted for analysis!")
+            except Exception as e:
+                tkinter.messagebox.showerror("Error", f"An error occurred: {str(e)}")
+        else:
+            # If the processing is not yet done, check again after 100ms
+            self.after(100, self.check_processing_result, future)
 
     def monitor_directory_event(self):
 

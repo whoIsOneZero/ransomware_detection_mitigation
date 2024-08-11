@@ -70,6 +70,7 @@ class DirectoryMonitor:
                         \n4. Contact your IT administrator for further assistance.
                         """
         print(f"This is the file path/name: {file_path}")
+
         # End the program for now
         return
 
@@ -158,13 +159,3 @@ class DirectoryMonitor:
                 print("Non-ransomware sample.")
 
         print("Classification completed and data saved to Firestore.")
-
-
-""" if __name__ == "__main__":
-    # Choose the directory to monitor
-    directory_to_monitor = os.path.expanduser("~/Downloads")
-
-    print(f"{directory_to_monitor} is being monitored")
-
-    # Start monitoring the directory and submit new files
-    handler.start_monitoring(directory_to_monitor, handle_sample) """

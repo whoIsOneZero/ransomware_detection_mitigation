@@ -203,7 +203,7 @@ class App(customtkinter.CTk):
 
     def handle_result(self, analysis_result):
 
-        if analysis_result == 0:
+        if analysis_result == 1:
             if tkinter.messagebox.askyesno(
                 "Ransomware Detected!",
                 """Warning: A ransomware sample has been detected on your system.

@@ -48,7 +48,6 @@ class DirectoryMonitor:
         observer = Observer()
         observer.schedule(event_handler, path=self.directory, recursive=False)
         observer.start()
-        # print(f"Monitoring directory: {self.directory}")
 
         try:
             while True:
@@ -71,9 +70,6 @@ class DirectoryMonitor:
                         """
         print(f"This is the file path/name: {file_path}")
 
-        # End the program for now
-        return
-
         # Submit sample
         task_id = cuckoo_api.submit_file(file_path)
 
@@ -83,7 +79,6 @@ class DirectoryMonitor:
         # Check if the data exists in Firestore
         existing_data = cuckoo_api.get_data_by_hash(file_hash)
         if existing_data:
-            # st.info("\tKnown sample. \nFetching data from signature repository.")
 
             result = existing_data["is_ransomware"]
 

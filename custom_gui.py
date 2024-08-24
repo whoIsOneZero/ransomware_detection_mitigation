@@ -110,6 +110,12 @@ class App(customtkinter.CTk):
         )
         self.submit_button.grid(row=1, column=2, padx=20, pady=20)
 
+        # Label to display selected file information
+        self.file_info_label = customtkinter.CTkLabel(
+            self.tabview.tab("Upload Sample"), text="No file selected."
+        )
+        self.file_info_label.grid(row=2, column=0, columnspan=3, padx=20, pady=10)
+
     def configure_monitor_tab(self):
         self.monitor_label = customtkinter.CTkLabel(
             self.tabview.tab("Monitor Directory"),
@@ -138,6 +144,10 @@ class App(customtkinter.CTk):
             ],
         )
         if self.filepath:
+            self.file_info_label.configure(
+                text=f"Selected File: {os.path.basename(self.filepath)}"
+            )
+
             self.submit_button.configure(state="normal")
 
     def submit_sample_event(self):
@@ -229,6 +239,10 @@ class App(customtkinter.CTk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
 
-if __name__ == "__main__":
+def main():
     app = App()
     app.mainloop()
+
+
+if __name__ == "__main__":
+    main()

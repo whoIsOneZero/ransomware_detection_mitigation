@@ -6,7 +6,6 @@ from customtkinter import filedialog
 from monitor import DirectoryMonitor
 from sample_handler import single_sample
 import concurrent.futures
-import threading
 
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
@@ -188,23 +187,36 @@ class App(customtkinter.CTk):
 
                 print(f"The reslult: {_result}")
 
-                if _result == 0:  # Ransomware detected
+                if _result == 1:  # Ransomware detected
                     if tkinter.messagebox.askyesno(
-                        "Ransomware Detected",
-                        "The sample is classified as ransomware. Do you want to delete it?",
+                        "Ransomware Detected!",
+                        """Warning: A ransomware sample has been detected on your system.
+                        \nDo you want to go ahead to delete the sample?
+                        """,
                     ):
                         os.remove(self.filepath)  # Delete the file
                         tkinter.messagebox.showinfo(
-                            "Deleted", "The file has been deleted."
+                            "Deleted",
+                            """The file has been deleted. Please take the following actions immediately:
+                            \n1. Disconnect from the internet.
+                            \n2. Do not open any suspicious files.
+                            \n3. Run a full system scan using your antivirus software.
+                            """,
                         )
                     else:
                         tkinter.messagebox.showinfo(
-                            "Not Deleted", "The file was not deleted."
+                            "Not Deleted",
+                            """The file was not deleted. Please take the following actions immediately:
+                            \n1. Disconnect from the internet.
+                            \n2. Do not open any suspicious files.
+                            \n3. Run a full system scan using your antivirus software.
+                            """,
                         )
-                """ else:
+                else:
                     tkinter.messagebox.showinfo(
-                        "Success", "Sample submitted for analysis!"
-                    ) """
+                        "No Threat Detected",
+                        "The sample is not classified as ransomware. No malicious activity detected.",
+                    )
 
             except Exception as e:
                 tkinter.messagebox.showerror("Error", f"An error occurred: {str(e)}")

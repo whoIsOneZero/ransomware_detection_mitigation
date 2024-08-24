@@ -3,8 +3,9 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 from customtkinter import filedialog
-from monitor import DirectoryMonitor
 from sample_handler import single_sample
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 import concurrent.futures
 
 customtkinter.set_appearance_mode("System")
@@ -27,6 +28,9 @@ class App(customtkinter.CTk):
 
         # Create tabview
         self.create_tabview()
+
+        # Initialize observer
+        self.observer = None
 
     def configure_grid(self):
         self.grid_columnconfigure(1, weight=1)
@@ -180,7 +184,9 @@ class App(customtkinter.CTk):
         y = (self.winfo_screenheight() // 2) - (height // 2)
         window.geometry(f"+{x}+{y}")
 
-    def process_sample_in_background(self):
+    def process_sample_in_background(self, filepath=None):
+        if filepath:
+            return single_sample.handle_sample(filepath)
         return single_sample.handle_sample(self.filepath)
 
     def check_processing_result(self, future):
@@ -228,8 +234,17 @@ class App(customtkinter.CTk):
     def monitor_directory_event(self):
         folder_selected = filedialog.askdirectory()
         if folder_selected:
-            dir_monitor = DirectoryMonitor(directory=folder_selected)
-            dir_monitor.start_monitoring()
+            if self.observer:
+                self.observer.stop()
+
+            self.observer = Observer()
+            event_handler = FileMonitorHandler(self.process_sample_in_background)
+            self.observer.schedule(event_handler, folder_selected, recursive=False)
+            self.observer.start()
+
+            tkinter.messagebox.showinfo(
+                "Monitoring", f"Monitoring {folder_selected} for changes."
+            )
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -239,10 +254,18 @@ class App(customtkinter.CTk):
         customtkinter.set_widget_scaling(new_scaling_float)
 
 
-def main():
-    app = App()
-    app.mainloop()
+class FileMonitorHandler(FileSystemEventHandler):
+    def __init__(self, process_sample):
+        self.process_sample = process_sample
+
+    def on_created(self, event):
+        if not event.is_directory:
+            future = concurrent.futures.ThreadPoolExecutor().submit(
+                self.process_sample, event.src_path
+            )
+            future.result()
 
 
 if __name__ == "__main__":
-    main()
+    app = App()
+    app.mainloop()

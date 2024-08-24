@@ -15,16 +15,25 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        # configure window
+        # Configure window
         self.title("RansomShield")
-        self.geometry(f"{1100}x{580}")
+        self.geometry("1100x580")
 
-        # configure grid layout (4x4)
+        # Configure grid layout (4x4)
+        self.configure_grid()
+
+        # Create sidebar frame with widgets
+        self.create_sidebar_frame()
+
+        # Create tabview
+        self.create_tabview()
+
+    def configure_grid(self):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        # create sidebar frame with widgets
+    def create_sidebar_frame(self):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
@@ -37,6 +46,9 @@ class App(customtkinter.CTk):
         )
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
+        self.create_sidebar_options()
+
+    def create_sidebar_options(self):
         self.appearance_mode_label = customtkinter.CTkLabel(
             self.sidebar_frame, text="Appearance Mode:", anchor="w"
         )
@@ -59,7 +71,7 @@ class App(customtkinter.CTk):
         )
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
-        # create tabview
+    def create_tabview(self):
         self.tabview = customtkinter.CTkTabview(self)
         self.tabview.grid(
             row=0,
@@ -74,7 +86,10 @@ class App(customtkinter.CTk):
         self.tabview.add("Upload Sample")
         self.tabview.add("Monitor Directory")
 
-        # Configure the "Upload Sample" tab
+        self.configure_upload_tab()
+        self.configure_monitor_tab()
+
+    def configure_upload_tab(self):
         self.upload_label = customtkinter.CTkLabel(
             self.tabview.tab("Upload Sample"), text="Upload and Analyze a Sample"
         )
@@ -91,11 +106,11 @@ class App(customtkinter.CTk):
             self.tabview.tab("Upload Sample"),
             text="Submit",
             command=self.submit_sample_event,
-            state="disabled",  # Initially disabled
+            state="disabled",
         )
         self.submit_button.grid(row=1, column=2, padx=20, pady=20)
 
-        # Configure the "Monitor Directory" tab
+    def configure_monitor_tab(self):
         self.monitor_label = customtkinter.CTkLabel(
             self.tabview.tab("Monitor Directory"),
             text="Monitor a Directory for Changes",
@@ -109,13 +124,10 @@ class App(customtkinter.CTk):
         )
         self.monitor_button.grid(row=1, column=0, padx=20, pady=20)
 
-        # set default values
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
 
     def upload_sample_event(self):
-
-        # print("Upload sample button clicked")
         self.filepath = filedialog.askopenfilename(
             filetypes=[
                 ("Executable files", "*.exe"),
@@ -125,110 +137,86 @@ class App(customtkinter.CTk):
                 ("Binary files", "*.bin"),
             ],
         )
-
         if self.filepath:
-
-            # Enable the submit button
             self.submit_button.configure(state="normal")
 
     def submit_sample_event(self):
         if self.filepath:
-            # Create a new top-level window to overlay the main window
-            self.loading_window = customtkinter.CTkToplevel(self)
-            self.loading_window.geometry("300x100")  # Adjust size as needed
-            self.loading_window.title("Processing...")
-
-            # Position it in the center of the main window
-            self.loading_window.transient(self)
-            self.loading_window.grab_set()
-
-            # Disable main window interaction
-            self.loading_window.update_idletasks()
-            x = (self.winfo_screenwidth() // 2) - (300 // 2)
-            y = (self.winfo_screenheight() // 2) - (100 // 2)
-            self.loading_window.geometry(f"+{x}+{y}")
-
-            # Create a loading indicator inside the top-level window
-            self.loading_bar = customtkinter.CTkProgressBar(
-                self.loading_window, mode="indeterminate"
-            )
-            self.loading_bar.pack(pady=20, padx=20)
-            self.loading_bar.start()
-
-            # Refresh the UI to show the loading bar
-            self.update()
-
-            # Run the sample processing in a separate thread
+            self.show_loading_window()
             self.executor = concurrent.futures.ThreadPoolExecutor()
             future = self.executor.submit(self.process_sample_in_background)
-
-            # Schedule a function to check the result
             self.after(100, self.check_processing_result, future)
-
         else:
             tkinter.messagebox.showwarning("Error", "No file selected.")
 
+    def show_loading_window(self):
+        self.loading_window = customtkinter.CTkToplevel(self)
+        self.loading_window.geometry("300x100")
+        self.loading_window.title("Processing...")
+        self.loading_window.transient(self)
+        self.loading_window.grab_set()
+        self.center_window(self.loading_window, 300, 100)
+
+        self.loading_bar = customtkinter.CTkProgressBar(
+            self.loading_window, mode="indeterminate"
+        )
+        self.loading_bar.pack(pady=20, padx=20)
+        self.loading_bar.start()
+
+        self.update()
+
+    def center_window(self, window, width, height):
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2)
+        window.geometry(f"+{x}+{y}")
+
     def process_sample_in_background(self):
-        """This method runs in a separate thread"""
-        analysis_result = single_sample.handle_sample(self.filepath)
-
-        # print(f"The result {analysis_result}")
-
-        return analysis_result
+        return single_sample.handle_sample(self.filepath)
 
     def check_processing_result(self, future):
         if future.done():
             self.loading_bar.stop()
-            self.loading_window.destroy()  # Close the loading window
-
+            self.loading_window.destroy()
             try:
-                # Get the result of the processing
-                _result = future.result()
-
-                print(f"The reslult: {_result}")
-
-                if _result == 1:  # Ransomware detected
-                    if tkinter.messagebox.askyesno(
-                        "Ransomware Detected!",
-                        """Warning: A ransomware sample has been detected on your system.
-                        \nDo you want to go ahead to delete the sample?
-                        """,
-                    ):
-                        os.remove(self.filepath)  # Delete the file
-                        tkinter.messagebox.showinfo(
-                            "Deleted",
-                            """The file has been deleted. Please take the following actions immediately:
-                            \n1. Disconnect from the internet.
-                            \n2. Do not open any suspicious files.
-                            \n3. Run a full system scan using your antivirus software.
-                            """,
-                        )
-                    else:
-                        tkinter.messagebox.showinfo(
-                            "Not Deleted",
-                            """The file was not deleted. Please take the following actions immediately:
-                            \n1. Disconnect from the internet.
-                            \n2. Do not open any suspicious files.
-                            \n3. Run a full system scan using your antivirus software.
-                            """,
-                        )
-                else:
-                    tkinter.messagebox.showinfo(
-                        "No Threat Detected",
-                        "The sample is not classified as ransomware. No malicious activity detected.",
-                    )
-
+                result = future.result()
+                self.handle_result(result)
             except Exception as e:
                 tkinter.messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:
-            # If the processing is not yet done, check again after 100ms
             self.after(100, self.check_processing_result, future)
 
+    def handle_result(self, analysis_result):
+
+        if analysis_result == 0:
+            if tkinter.messagebox.askyesno(
+                "Ransomware Detected!",
+                """Warning: A ransomware sample has been detected on your system.
+                \nDo you want to delete the sample?""",
+            ):
+                os.remove(self.filepath)
+                tkinter.messagebox.showinfo(
+                    "Deleted",
+                    """The file has been deleted. Please take the following actions immediately:
+                    \n1. Disconnect from the internet.
+                    \n2. Do not open any suspicious files.
+                    \n3. Run a full system scan using your antivirus software.""",
+                )
+            else:
+                tkinter.messagebox.showinfo(
+                    "Not Deleted",
+                    """The file was not deleted. Please take the following actions immediately:
+                    \n1. Disconnect from the internet.
+                    \n2. Do not open any suspicious files.
+                    \n3. Run a full system scan using your antivirus software.""",
+                )
+        else:
+            tkinter.messagebox.showinfo(
+                "No Threat Detected",
+                "The sample is not classified as ransomware. No malicious activity detected.",
+            )
+
     def monitor_directory_event(self):
-
         folder_selected = filedialog.askdirectory()
-
-        # Start monitoring
         if folder_selected:
             dir_monitor = DirectoryMonitor(directory=folder_selected)
             dir_monitor.start_monitoring()

@@ -1,3 +1,4 @@
+import os
 import tkinter
 import tkinter.messagebox
 import customtkinter
@@ -7,12 +8,8 @@ from sample_handler import single_sample
 import concurrent.futures
 import threading
 
-customtkinter.set_appearance_mode(
-    "System"
-)  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme(
-    "blue"
-)  # Themes: "blue" (standard), "green", "dark-blue"
+customtkinter.set_appearance_mode("System")
+customtkinter.set_default_color_theme("blue")
 
 
 class App(customtkinter.CTk):
@@ -119,7 +116,7 @@ class App(customtkinter.CTk):
 
     def upload_sample_event(self):
 
-        print("Upload sample button clicked")
+        # print("Upload sample button clicked")
         self.filepath = filedialog.askopenfilename(
             filetypes=[
                 ("Executable files", "*.exe"),
@@ -131,11 +128,9 @@ class App(customtkinter.CTk):
         )
 
         if self.filepath:
-            # print(f"File selected: {self.filepath}")
 
             # Enable the submit button
             self.submit_button.configure(state="normal")
-        # print(filepath)
 
     def submit_sample_event(self):
         if self.filepath:
@@ -176,7 +171,11 @@ class App(customtkinter.CTk):
 
     def process_sample_in_background(self):
         """This method runs in a separate thread"""
-        single_sample.handle_sample(self.filepath)
+        analysis_result = single_sample.handle_sample(self.filepath)
+
+        # print(f"The result {analysis_result}")
+
+        return analysis_result
 
     def check_processing_result(self, future):
         if future.done():
@@ -184,9 +183,29 @@ class App(customtkinter.CTk):
             self.loading_window.destroy()  # Close the loading window
 
             try:
-                # Check if there was an exception during processing
-                future.result()
-                tkinter.messagebox.showinfo("Success", "Sample submitted for analysis!")
+                # Get the result of the processing
+                _result = future.result()
+
+                print(f"The reslult: {_result}")
+
+                if _result == 0:  # Ransomware detected
+                    if tkinter.messagebox.askyesno(
+                        "Ransomware Detected",
+                        "The sample is classified as ransomware. Do you want to delete it?",
+                    ):
+                        os.remove(self.filepath)  # Delete the file
+                        tkinter.messagebox.showinfo(
+                            "Deleted", "The file has been deleted."
+                        )
+                    else:
+                        tkinter.messagebox.showinfo(
+                            "Not Deleted", "The file was not deleted."
+                        )
+                """ else:
+                    tkinter.messagebox.showinfo(
+                        "Success", "Sample submitted for analysis!"
+                    ) """
+
             except Exception as e:
                 tkinter.messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:

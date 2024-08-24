@@ -49,14 +49,14 @@ def handle_sample(file_path):
 
         result = existing_data["is_ransomware"]
 
-        if result == 1:
-            print(f"⚠️ {warning_mesage}")
-        else:
-            print("Non-ransomware sample.")
-
         print(existing_data)
 
-        return
+        if result == 1:
+            print(f"⚠️ {warning_mesage}")
+            return 1
+        else:
+            print("Non-ransomware sample.")
+            return 0
 
     if not task_id:
         print("The Cuckoo API has not been started yet or is currently unavailable.")
@@ -113,7 +113,9 @@ def handle_sample(file_path):
 
         if is_ransomware == 1:
             print(f"⚠️ {warning_mesage}")
+            return 1
         else:
             print("Non-ransomware sample.")
+            return 0
 
     print("Classification completed and data saved to Firestore.")

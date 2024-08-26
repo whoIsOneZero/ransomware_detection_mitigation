@@ -27,11 +27,6 @@ class CuckooAPI:
             firebase_admin.initialize_app(cred)
         self.db = firestore.client()
 
-        # Initialize Firebase
-        # cred = credentials.Certificate("service_account_key.json")
-        # firebase_admin.initialize_app(cred)
-        # self.db = firestore.client()
-
     def hash_file(self, file_path):
         """Calculate the SHA-256 hash of the given file."""
         sha256_hash = hashlib.sha256()
@@ -59,7 +54,6 @@ class CuckooAPI:
 
     def submit_file(self, file_path):
         """Submit a file to Cuckoo for analysis."""
-        # headers = {"Authorization": "Bearer {}".format(API_KEY)}
         try:
             with open(file_path, "rb") as file:
                 files = {"file": file}
@@ -76,9 +70,23 @@ class CuckooAPI:
             print("Error submitting file: {}".format(e))
             return None
 
+    def submit_url(self, url):
+        """Submit a URL to Cuckoo for analysis."""
+        try:
+            data = {"url": url}
+            response = requests.post(
+                f"{self.api_url}/tasks/create/url", headers=self.headers, data=data
+            )
+            response.raise_for_status()
+            task_id = response.json().get("task_id")
+            print(f"URL submitted successfully. Task ID: {task_id}")
+            return task_id
+        except requests.exceptions.RequestException as e:
+            print(f"Error submitting URL: {e}")
+            return None
+
     def get_task_status(self, task_id):
         """Check the status of a task."""
-        # headers = {"Authorization": "Bearer {}".format(API_KEY)}
         try:
             response = requests.get(
                 "{}/tasks/view/{}".format(self.api_url, task_id), headers=self.headers
@@ -92,7 +100,6 @@ class CuckooAPI:
 
     def get_report(self, task_id):
         """Retrieve the analysis report."""
-        # headers = {"Authorization": "Bearer {}".format(API_KEY)}
         try:
             response = requests.get(
                 "{}/tasks/report/{}".format(self.api_url, task_id), headers=self.headers

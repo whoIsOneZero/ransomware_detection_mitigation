@@ -89,9 +89,11 @@ class App(customtkinter.CTk):
 
         self.tabview.add("Upload Sample")
         self.tabview.add("Monitor Directory")
+        self.tabview.add("Submit Link")
 
         self.configure_upload_tab()
         self.configure_monitor_tab()
+        self.configure_submit_link_tab()
 
     def configure_upload_tab(self):
         self.upload_label = customtkinter.CTkLabel(
@@ -162,6 +164,34 @@ class App(customtkinter.CTk):
             self.after(100, self.check_processing_result, future)
         else:
             tkinter.messagebox.showwarning("Error", "No file selected.")
+
+    def configure_submit_link_tab(self):
+        self.link_label = customtkinter.CTkLabel(
+            self.tabview.tab("Submit Link"), text="Submit a URL for Analysis"
+        )
+        self.link_label.grid(row=0, column=0, padx=20, pady=20)
+
+        self.link_entry = customtkinter.CTkEntry(
+            self.tabview.tab("Submit Link"), placeholder_text="Enter URL"
+        )
+        self.link_entry.grid(row=1, column=0, padx=20, pady=20)
+
+        self.link_submit_button = customtkinter.CTkButton(
+            self.tabview.tab("Submit Link"),
+            text="Submit",
+            command=self.submit_link_event,
+        )
+        self.link_submit_button.grid(row=2, column=0, padx=20, pady=20)
+
+    def submit_link_event(self):
+        url = self.link_entry.get()
+        if url:
+            self.show_loading_window("Processing URL...")
+            self.executor = concurrent.futures.ThreadPoolExecutor()
+            future = self.executor.submit(self.process_url_in_background, url)
+            self.after(100, self.check_processing_result, future)
+        else:
+            tkinter.messagebox.showwarning("Error", "No URL entered.")
 
     def show_loading_window(self):
         self.loading_window = customtkinter.CTkToplevel(self)

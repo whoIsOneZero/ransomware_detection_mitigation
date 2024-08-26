@@ -9,17 +9,24 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 
 ## Features
 
-- File upload and analysis using Cuckoo Sandbox.
-- Dynamic feature extraction from analysis reports.
+- File upload and analysis.
+- Directory monitoring.
+- Link submission for analysis.
+- Dynamic analysis with Cuckoo Sandbox.
 - Ransomware classification using a trained SVM model.
 - Integration with a cloud-based signature repository.
-- User-friendly Streamlit interface for easy usage.
+- User-friendly interface for easy usage.
 
 ## Prerequisites
 1. **Python Installed**: Ensure you have Python 3.10+ installed on your machine.
 2. **Oracle VM VirtualBox**: Enusre you're have Oracle VM VirtualBox on a Windows sytem. Download [here](https://www.virtualbox.org/wiki/Downloads)
-3. **Cuckoo Sandbox**: Follow the tutorial here to setup your Cuckoo Sandbox
-  ```https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/```
+3. **Cuckoo Sandbox**: Follow the tutorial to setup your Cuckoo Sandbox locally. [Link](https://beginninghacking.net/2022/11/16/how-to-setup-your-own-malware-analysis-box-cuckoo-sandbox/)
+5. **Other Resources**:
+    - [Windows 7 ISO](https://drive.google.com/file/d/1pOXtzxuCWtWzPAcVlrVqQIdKAbFqjKLl/view?usp=sharing)
+    - [Ubuntu 18.04.0 Bionic Beaver VM](https://sourceforge.net/projects/osboxes/files/v/vb/55-U-u/18.04/18.04.6/64bit.7z/download)
+    - [Cuckoo Docs](https://cuckoo.readthedocs.io/en/latest/)
+    - [Cannot start nested Win7 VM in Ubuntu VM](https://forums.virtualbox.org/viewtopic.php?t=87752)
+    - [Setup VirtualBox to be able to communicate with the Cuckoo API from the host machine:](https://stackoverflow.com/questions/31922055/bridged-networking-not-working-in-virtualbox-under-windows-10)
 
 ## Usage
 
@@ -111,6 +118,12 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
     ```
 
 6. **Run the Streamlit App**:  
+  On your host machine:
+     ```sh
+     python main.py
+     ```
+
+<!-- 6. **Run the Streamlit App**:  
   On your host machine;
    - Start the Streamlit app using the `streamlit run` command followed by the name of your main Python script (e.g., `main.py`).
      ```sh
@@ -118,10 +131,10 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
      ```
 
 6. **Access the App in a Web Browser**:  
-  On your host machine;
-   - Once the app is running, Streamlit will provide a local URL (typically `http://localhost:8501`). Open this URL in a web browser to access your chatbot-powered data analysis tool.
+  On your host machine:
+   - Once the app is running, Streamlit will provide a local URL (typically `http://localhost:8501`). Open this URL in a web browser to access your chatbot-powered data analysis tool. -->
 
-
+<!-- 
 ## More
 - Cuckoo Docs:
 ```https://cuckoo.readthedocs.io/en/latest/```
@@ -131,7 +144,9 @@ RansomShield is a powerful tool designed to detect and mitigate crypto-ransomwar
 ## Troubleshooting
 - Cannot start nested win7 VM in Ubuntu VM
 ```https://forums.virtualbox.org/viewtopic.php?t=87752``` 
-- Setup VirtualBox to be able to communicate with the Cuckoo API from teh host machine:
+- Setup VirtualBox to be able to communicate with the Cuckoo API from the host machine:
 ```https://stackoverflow.com/questions/31922055/bridged-networking-not-working-in-virtualbox-under-windows-10```
 - Shared folder:
 ```https://www.makeuseof.com/how-to-create-virtualbox-shared-folder-access/```
+
+ -->

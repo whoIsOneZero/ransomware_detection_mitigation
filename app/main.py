@@ -1,4 +1,5 @@
 import os
+import time
 import tkinter
 import tkinter.messagebox
 import customtkinter
@@ -192,6 +193,13 @@ class App(customtkinter.CTk):
             self.after(100, self.check_processing_result, future)
         else:
             tkinter.messagebox.showwarning("Error", "No URL entered.")
+
+    def process_url_in_background(self, url):
+        # URL submission handling
+        # task_id = self.cuckoo_api.submit_url(url)
+        # return task_id
+        time.sleep(380)
+        return 0
 
     def show_loading_window(self):
         self.loading_window = customtkinter.CTkToplevel(self)
